@@ -9,14 +9,15 @@
     "@remotion/cli": "4.0.448",
     "@remotion/media": "4.0.448",
     "@remotion/zod-types": "4.0.448",
+    "mediabunny": "1.39.2",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "remotion": "4.0.448",
-    "zod": "4.3.6",
-    "mediabunny": "1.39.2"
+    "zod": "4.3.6"
   },
   "devDependencies": {
     "@remotion/eslint-config-flat": "4.0.448",
+    "@types/node": "^22.19.17",
     "@types/react": "19.2.7",
     "@types/web": "0.0.166",
     "eslint": "9.19.0",
@@ -27,6 +28,7 @@
     "dev": "remotion studio",
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
-    "lint": "eslint src && tsc"
+    "lint": "eslint src && tsc",
+    "render:gif": "remotion render Scene out.gif --codec=gif --scale=0.5 --every-nth-frame=2 --jpeg-quality=72"
   }
 }
