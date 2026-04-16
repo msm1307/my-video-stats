@@ -25,14 +25,14 @@ jobs:
       - name: Install FFmpeg
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
 
-      - name: Render Video
+      - name: Render GIF (README용)
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           REMOTION_GITHUB_USER: msm0748
-        run: pnpm exec remotion render Scene out.webm --codec=vp8
+        run: pnpm exec remotion render Scene out.gif --codec=gif
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: video
-          path: out.webm
+          path: out.gif
