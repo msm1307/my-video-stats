@@ -1,0 +1,38 @@
+name: Render Video
+on:
+  schedule:
+    - cron: "0 */4 * * *"
+  workflow_dispatch:
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Render Video
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          REMOTION_GITHUB_USER: msm0748
+        run: pnpm exec remotion render Scene out.webm --codec=vp8
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: video
+          path: out.webm
