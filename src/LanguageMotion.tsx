@@ -7,8 +7,9 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
+import { resolveLanguageColor } from "./languageColors";
 
-export type Language = { name: string; percent: number; color: string };
+export type Language = { name: string; percent: number; color?: string };
 
 export const LanguageMotion: React.FC<{ languages: Language[] }> = ({
   languages,
@@ -63,11 +64,16 @@ export const LanguageMotion: React.FC<{ languages: Language[] }> = ({
     extrapolateRight: "clamp",
   });
 
+  const sheen = interpolate(frame, [0, 120], [0, 1], {
+    extrapolateRight: "clamp",
+  });
+  const barShineX = interpolate(sheen, [0, 1], [-40, 120]);
+
   return (
     <AbsoluteFill
       style={{
         background:
-          "radial-gradient(120% 80% at 12% 8%, #1a1522 0%, transparent 52%), radial-gradient(90% 70% at 88% 92%, #152028 0%, transparent 45%), linear-gradient(168deg, #0a090c 0%, #121018 48%, #0c0b10 100%)",
+          "radial-gradient(ellipse 85% 55% at 50% -5%, rgba(99,102,241,0.18) 0%, transparent 55%), radial-gradient(ellipse 70% 50% at 100% 100%, rgba(236,72,153,0.12) 0%, transparent 50%), linear-gradient(165deg, #07060a 0%, #0f0e14 42%, #08070c 100%)",
         fontFamily:
           'ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
         color: "#f4f0ea",
@@ -77,11 +83,20 @@ export const LanguageMotion: React.FC<{ languages: Language[] }> = ({
         style={{
           position: "absolute",
           inset: 0,
-          opacity: 0.07,
+          opacity: 0.055,
           backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
-          backgroundSize: "48px 48px",
+            "linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)",
+          backgroundSize: "52px 52px",
           pointerEvents: "none",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          pointerEvents: "none",
+          background:
+            "radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.55) 100%)",
         }}
       />
 
@@ -98,10 +113,10 @@ export const LanguageMotion: React.FC<{ languages: Language[] }> = ({
         <p
           style={{
             margin: 0,
-            fontSize: 13,
-            letterSpacing: "0.28em",
+            fontSize: 12,
+            letterSpacing: "0.32em",
             textTransform: "uppercase",
-            color: "#9c8c78",
+            color: "#a89f92",
             fontWeight: 600,
           }}
         >
@@ -109,12 +124,17 @@ export const LanguageMotion: React.FC<{ languages: Language[] }> = ({
         </p>
         <h1
           style={{
-            margin: "10px 0 0",
+            margin: "12px 0 0",
             fontSize: titleSize,
             fontWeight: 800,
-            letterSpacing: "-0.03em",
-            lineHeight: compactHeader ? 1.12 : 1.08,
-            maxWidth: "85%",
+            letterSpacing: "-0.035em",
+            lineHeight: compactHeader ? 1.12 : 1.06,
+            maxWidth: "92%",
+            background:
+              "linear-gradient(105deg, #faf7f2 0%, #e8dfd0 35%, #c9b8a4 72%, #f5f0e8 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
           }}
         >
           {compactHeader ? (
@@ -129,14 +149,36 @@ export const LanguageMotion: React.FC<{ languages: Language[] }> = ({
         </h1>
         <div
           style={{
-            marginTop: compactHeader ? 14 : 22,
-            width: Math.min(200, width * 0.14),
-            height: 4,
-            borderRadius: 2,
-            background:
-              "linear-gradient(90deg, #c9a227, #e8d4a8, rgba(201,162,39,0.2))",
+            marginTop: compactHeader ? 16 : 24,
+            position: "relative",
+            width: Math.min(240, width * 0.18),
+            height: 5,
+            borderRadius: 3,
+            overflow: "hidden",
+            background: "rgba(255,255,255,0.06)",
           }}
-        />
+        >
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(90deg, #a78bfa, #c4b5fd, #fcd34d, #fbbf24)",
+              opacity: 0.95,
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "38%",
+              left: `${barShineX}%`,
+              background:
+                "linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent)",
+              filter: "blur(4px)",
+            }}
+          />
+        </div>
       </div>
 
       <div
@@ -152,6 +194,7 @@ export const LanguageMotion: React.FC<{ languages: Language[] }> = ({
         }}
       >
         {sorted.map((lang, index) => {
+          const accent = resolveLanguageColor(lang.name, lang.color);
           const delay = 10 + index * 8;
           const row = spring({
             frame: frame - delay,
@@ -192,111 +235,154 @@ export const LanguageMotion: React.FC<{ languages: Language[] }> = ({
 
           return (
             <div
-              key={lang.name}
+              key={`${lang.name}-${index}`}
               style={{
                 flex: "1 1 0",
                 minHeight: 0,
-                display: "grid",
-                gridTemplateColumns: tight
-                  ? "36px 1fr minmax(72px, 0.32fr)"
-                  : "44px 1fr minmax(120px, 0.35fr)",
-                alignItems: "center",
-                gap: tight ? "8px 12px" : "14px 20px",
-                padding: `${rowPadY}px ${rowPadX}px`,
-                borderRadius: tight ? 10 : 14,
-                background: "rgba(255,255,255,0.03)",
-                border: "1px solid rgba(255,255,255,0.06)",
-                boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
+                position: "relative",
+                borderRadius: tight ? 12 : 16,
+                overflow: "hidden",
                 transform: `translateY(${rowY}px)`,
                 opacity: rowOp,
-                overflow: "hidden",
+                boxShadow: `
+                  0 0 0 1px rgba(255,255,255,0.07),
+                  0 18px 48px rgba(0,0,0,0.45),
+                  inset 0 1px 0 rgba(255,255,255,0.06)
+                `,
               }}
             >
-              <span
-                style={{
-                  fontSize: tight ? 17 : 22,
-                  fontWeight: 800,
-                  color: "#5c534a",
-                  textAlign: "center",
-                }}
-              >
-                {index + 1}
-              </span>
-              <div style={{ minWidth: 0, minHeight: 0 }}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: tight ? 8 : 12,
-                    marginBottom: tight ? 6 : 10,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: tight ? 8 : 10,
-                      height: tight ? 8 : 10,
-                      borderRadius: "50%",
-                      background: lang.color,
-                      boxShadow: `0 0 16px ${lang.color}66`,
-                      flexShrink: 0,
-                    }}
-                  />
-                  <span
-                    style={{
-                      fontSize: nameFs,
-                      fontWeight: 700,
-                      letterSpacing: "-0.02em",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                  >
-                    {lang.name}
-                  </span>
-                </div>
-                <div
-                  style={{
-                    position: "relative",
-                    height: barH,
-                    borderRadius: barH / 2,
-                    background: "rgba(0,0,0,0.35)",
-                    overflow: "hidden",
-                  }}
-                >
-                  <div
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      transformOrigin: "left center",
-                      transform: `scaleX(${Math.max(0.004, fill)})`,
-                      borderRadius: barH / 2,
-                      background: `linear-gradient(90deg, ${lang.color}cc, ${lang.color})`,
-                      boxShadow: `inset 0 1px 0 rgba(255,255,255,0.25)`,
-                    }}
-                  />
-                </div>
-              </div>
               <div
                 style={{
-                  textAlign: "right",
-                  fontVariantNumeric: "tabular-nums",
-                  fontWeight: 800,
-                  fontSize: pctFs,
-                  color: "#faf6f0",
-                  letterSpacing: "-0.03em",
+                  position: "absolute",
+                  inset: 0,
+                  background:
+                    "linear-gradient(145deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 48%, rgba(0,0,0,0.15) 100%)",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  top: 10,
+                  bottom: 10,
+                  width: 4,
+                  borderRadius: 4,
+                  background: accent,
+                  boxShadow: `0 0 24px ${accent}99`,
+                }}
+              />
+              <div
+                style={{
+                  position: "relative",
+                  zIndex: 1,
+                  height: "100%",
+                  display: "grid",
+                  gridTemplateColumns: tight
+                    ? "36px 1fr minmax(72px, 0.32fr)"
+                    : "44px 1fr minmax(120px, 0.35fr)",
+                  alignItems: "center",
+                  gap: tight ? "8px 12px" : "14px 20px",
+                  padding: `${rowPadY}px ${rowPadX}px`,
+                  paddingLeft: tight ? 16 : 20,
                 }}
               >
-                {count >= 10 ? Math.round(count) : count.toFixed(1)}
                 <span
                   style={{
-                    fontSize: "0.55em",
-                    fontWeight: 700,
-                    color: "#a39a8e",
-                    marginLeft: 2,
+                    fontSize: tight ? 16 : 20,
+                    fontWeight: 800,
+                    color: "#c4b4a2",
+                    textAlign: "center",
+                    lineHeight: 1,
+                    padding: tight ? "6px 0" : "8px 0",
+                    borderRadius: 10,
+                    background: "rgba(0,0,0,0.35)",
+                    border: "1px solid rgba(255,255,255,0.06)",
                   }}
                 >
-                  %
+                  {index + 1}
                 </span>
+                <div style={{ minWidth: 0, minHeight: 0 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: tight ? 8 : 12,
+                      marginBottom: tight ? 6 : 10,
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: tight ? 9 : 11,
+                        height: tight ? 9 : 11,
+                        borderRadius: "50%",
+                        background: accent,
+                        boxShadow: `0 0 20px ${accent}aa, inset 0 0 0 1px rgba(255,255,255,0.35)`,
+                        flexShrink: 0,
+                      }}
+                    />
+                    <span
+                      style={{
+                        fontSize: nameFs,
+                        fontWeight: 700,
+                        letterSpacing: "-0.02em",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        color: "#f8f4ee",
+                      }}
+                    >
+                      {lang.name}
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      position: "relative",
+                      height: barH,
+                      borderRadius: barH / 2,
+                      background: "rgba(0,0,0,0.45)",
+                      overflow: "hidden",
+                      boxShadow: "inset 0 2px 6px rgba(0,0,0,0.35)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        transformOrigin: "left center",
+                        transform: `scaleX(${Math.max(0.004, fill)})`,
+                        borderRadius: barH / 2,
+                        background: `linear-gradient(90deg, ${accent}ee, ${accent}, ${accent}cc)`,
+                        boxShadow: `
+                          inset 0 1px 0 rgba(255,255,255,0.35),
+                          0 0 20px ${accent}66
+                        `,
+                      }}
+                    />
+                  </div>
+                </div>
+                <div
+                  style={{
+                    textAlign: "right",
+                    fontVariantNumeric: "tabular-nums",
+                    fontWeight: 800,
+                    fontSize: pctFs,
+                    color: "#faf6f0",
+                    letterSpacing: "-0.03em",
+                    textShadow: `0 0 28px ${accent}44`,
+                  }}
+                >
+                  {count >= 10 ? Math.round(count) : count.toFixed(1)}
+                  <span
+                    style={{
+                      fontSize: "0.55em",
+                      fontWeight: 700,
+                      color: "#9d948a",
+                      marginLeft: 2,
+                    }}
+                  >
+                    %
+                  </span>
+                </div>
               </div>
             </div>
           );

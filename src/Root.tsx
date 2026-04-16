@@ -1,14 +1,13 @@
 import { Composition } from "remotion";
 import { Scene, myCompSchema } from "./Scene";
 
+/** 색은 생략 → `src/languageColors.ts`에서 이름으로 자동 매칭 */
 const DEFAULT_LANGUAGES = [
-  { name: "TypeScript", percent: 45, color: "#3178c6" },
-  { name: "JavaScript", percent: 25, color: "#f7df1e" },
-  { name: "Rust", percent: 15, color: "#dea584" },
-  { name: "Python", percent: 10, color: "#3776ab" },
-  { name: "Go", percent: 5, color: "#00add8" },
-  { name: "Go", percent: 5, color: "#00add8" },
-  { name: "Go", percent: 5, color: "#00add8" },
+  { name: "TypeScript", percent: 45 },
+  { name: "JavaScript", percent: 25 },
+  { name: "Rust", percent: 15 },
+  { name: "Python", percent: 10 },
+  { name: "Go", percent: 5 },
 ];
 
 export const RemotionRoot: React.FC = () => {
